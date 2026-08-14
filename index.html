@@ -302,7 +302,7 @@
         <button class="btn btn-primary" onclick="goTo('products')">เลือกซื้อสินค้า →</button>
       </div>
       <div class="hero-visual">
-        <div class="k">// สินค้าทั้งหมดในระบบ (Universal Set)</div>
+        <div class="k">สินค้าทั้งหมดในระบบ (Universal Set)</div>
         <div class="big" id="totalProductsBig">0</div>
         <div class="small">รายการสินค้าทั้งหมด</div>
         <div class="rows" id="heroStatRows"></div>
@@ -315,7 +315,7 @@
     <div class="cat-grid" id="catGrid"></div>
 
     <div class="section-eyebrow" style="margin-top:34px;">สินค้าแนะนำ</div>
-    <h2 style="margin:0 0 4px;">ขายดีประจำสัปดาห์</h2>
+    <h2 style="margin:0 0 4px;">ตัวช่วยสุขภาพยอดนิยม</h2>
     <div class="grid" id="featuredGrid"></div>
   </section>
 
@@ -387,8 +387,8 @@ const PRODUCTS = [
   {id:2,  name:"ไอบูโพรเฟน 400มก.",       price:45,  stock:8,   emoji:"💊", tags:["ยาแก้ปวด","OTC"]},
   {id:3,  name:"วิตามินซี 1000มก.",        price:150, stock:60,  emoji:"🍊", tags:["วิตามิน","OTC","ลดราคา"]},
   {id:4,  name:"วิตามินดี3",               price:180, stock:35,  emoji:"☀️", tags:["วิตามิน","OTC"]},
-  {id:5,  name:"ยาลดความดัน (Amlodipine)", price:95,  stock:50,  emoji:"❤️", tags:["ยาโรคเรื้อรัง","ต้องใบสั่งแพทย์"]},
-  {id:6,  name:"ยาเบาหวาน (Metformin)",    price:110, stock:6,   emoji:"🩸", tags:["ยาโรคเรื้อรัง","ต้องใบสั่งแพทย์"]},
+  {id:5,  name:"ยาลดความดัน (Amlodipine)", price:95,  stock:50,  emoji:"❤️", tags:["ยาโรคเรื้อรัง","ยาควบคุมการใช้"]},
+  {id:6,  name:"ยาเบาหวาน (Metformin)",    price:110, stock:6,   emoji:"🩸", tags:["ยาโรคเรื้อรัง","ยาควบคุมการใช้"]},
   {id:7,  name:"เครื่องวัดความดัน",         price:990, stock:15,  emoji:"🩺", tags:["อุปกรณ์การแพทย์","OTC"]},
   {id:8,  name:"เครื่องวัดออกซิเจนปลายนิ้ว",price:590, stock:22,  emoji:"🫁", tags:["อุปกรณ์การแพทย์","OTC","ลดราคา"]},
   {id:9,  name:"ครีมกันแดด SPF50",         price:320, stock:40,  emoji:"🧴", tags:["สกินแคร์","OTC"]},
@@ -396,13 +396,13 @@ const PRODUCTS = [
   {id:11, name:"ยาแก้แพ้ (Cetirizine)",     price:38,  stock:70,  emoji:"🤧", tags:["ยาแก้ปวด","OTC"]},
   {id:12, name:"พลาสเตอร์ปิดแผล",           price:49,  stock:5,   emoji:"🩹", tags:["อุปกรณ์การแพทย์","OTC"]},
   {id:13, name:"ยาหยอดตา",                 price:75,  stock:33,  emoji:"👁️", tags:["OTC","สกินแคร์"]},
-  {id:14, name:"ยาลดไขมัน (Statin)",        price:135, stock:18,  emoji:"💊", tags:["ยาโรคเรื้อรัง","ต้องใบสั่งแพทย์"]},
+  {id:14, name:"ยาลดไขมัน (Statin)",        price:135, stock:18,  emoji:"💊", tags:["ยาโรคเรื้อรัง","ยาควบคุมการใช้"]},
   {id:15, name:"โอเมก้า 3 น้ำมันปลา",       price:220, stock:44,  emoji:"🐟", tags:["วิตามิน","OTC","ลดราคา"]},
 ];
 
 const TAG_ICON = {
   "ยาแก้ปวด":"💊","OTC":"🟢","ลดราคา":"🏷️","วิตามิน":"🍊","ยาโรคเรื้อรัง":"❤️",
-  "ต้องใบสั่งแพทย์":"📋","อุปกรณ์การแพทย์":"🩺","สกินแคร์":"🧴"
+  "ยาควบคุมการใช้":"📋","อุปกรณ์การแพทย์":"🩺","สกินแคร์":"🧴"
 };
 
 /* =====================================================================
@@ -492,7 +492,7 @@ function renderHome(){
   document.getElementById("heroStatRows").innerHTML = `
     <div><span>🏷️ กำลังลดราคา</span><span>${saleSet.size} รายการ</span></div>
     <div><span>⚠️ สต็อกต่ำ (&lt;10)</span><span>${lowStockSet.size} รายการ</span></div>
-    <div><span>📋 ต้องใบสั่งแพทย์</span><span>${rxSet.size} รายการ</span></div>
+    <div><span>📋 ยาควบคุมการใช้</span><span>${rxSet.size} รายการ</span></div>
   `;
 
   // ----- หมวดหมู่ทั้งหมด: ใช้ Set เพื่อดึงหมวด "ไม่ซ้ำ" จาก tags ทุกชิ้น -----
