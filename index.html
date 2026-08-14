@@ -1,22 +1,807 @@
-✚
-SetDee เภสัช
-ร้านยา ∙ จัดหมวดด้วยเซต
-หน้าแรก
-สินค้า
-ตะกร้า
-🛒 ตะกร้า 0
-🕐 —
-ดูแลสุขภาพให้ครบ ด้วยหลักคิดแบบ เซต
-ร้านยาเซตดีจัดหมวดสินค้าทุกชิ้นด้วย Set — สินค้าหนึ่งชิ้นเป็นสมาชิกได้หลายหมวดพร้อมกัน ทำให้ค้นหาและกรองสินค้าที่ตรงกับความต้องการของคุณได้แม่นยำกว่าเดิม
-เลือกซื้อสินค้า →
-// สินค้าทั้งหมดในระบบ (Universal Set)
-0
-รายการสินค้าทั้งหมด
-หมวดหมู่สินค้า — สร้างจาก NEW SET()
-เลือกดูตามหมวด
-แต่ละหมวดคือหนึ่งเซต (Set) ตัวเลขในวงเล็บคือขนาดเซต (Set.size)
-สินค้าแนะนำ
-ขายดีประจำสัปดาห์
-โปรเจกต์สาธิตหลักการดิสครีต (Set & Logic) — SetDee Pharmacy Demo
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SetDee Pharmacy — ร้านยาเซตดี</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;500;600;700&family=Sarabun:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F6FAF8;
+    --panel:#FFFFFF;
+    --ink:#152420;
+    --muted:#5E7A72;
+    --teal:#0F6B5C;
+    --teal-deep:#0B4F44;
+    --mint:#CDEAE0;
+    --mint-soft:#E7F5EF;
+    --coral:#FF7A59;
+    --coral-soft:#FFE6DE;
+    --line:#DCEAE4;
+    --console-bg:#0B1F1B;
+    --console-ink:#B9F5D8;
+    --console-dim:#5E9585;
+    --radius:16px;
+    --shadow: 0 8px 24px rgba(15,107,92,0.08);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Sarabun', sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,.display{font-family:'Kanit', sans-serif;}
+  .mono{font-family:'IBM Plex Mono', monospace;}
 
-Math Console
+  /* ---------- shell ---------- */
+  .app{
+    max-width:1180px;
+    margin:0 auto;
+    padding:0 20px 120px;
+  }
+  header.top{
+    position:sticky; top:0; z-index:30;
+    background:rgba(246,250,248,0.92);
+    backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--line);
+  }
+  .top-inner{
+    max-width:1180px; margin:0 auto;
+    padding:16px 20px;
+    display:flex; align-items:center; justify-content:space-between; gap:16px;
+  }
+  .brand{display:flex; align-items:center; gap:10px;}
+  .brand .mark{
+    width:38px;height:38px;border-radius:11px;
+    background:var(--teal); color:white;
+    display:flex;align-items:center;justify-content:center;
+    font-size:20px; font-weight:700; flex-shrink:0;
+    box-shadow: var(--shadow);
+  }
+  .brand-text .name{font-family:'Kanit',sans-serif; font-weight:600; font-size:18px; line-height:1.1;}
+  .brand-text .tag{font-size:11px; color:var(--muted); letter-spacing:.03em;}
+
+  nav.tabs{display:flex; gap:4px; background:var(--mint-soft); padding:4px; border-radius:999px;}
+  nav.tabs button{
+    border:none; background:transparent; cursor:pointer;
+    padding:9px 18px; border-radius:999px;
+    font-family:'Kanit',sans-serif; font-size:14px; font-weight:500;
+    color:var(--muted); transition:all .18s ease;
+  }
+  nav.tabs button.active{background:var(--teal); color:white; box-shadow:var(--shadow);}
+  nav.tabs button:hover:not(.active){color:var(--teal-deep);}
+
+  .cart-pill{
+    display:flex; align-items:center; gap:8px;
+    background:var(--panel); border:1px solid var(--line);
+    padding:8px 14px; border-radius:999px; cursor:pointer;
+    font-size:14px; font-weight:500; color:var(--teal-deep);
+  }
+  .cart-pill .count{
+    background:var(--coral); color:white; font-size:11px; font-weight:700;
+    min-width:18px; height:18px; border-radius:999px;
+    display:flex; align-items:center; justify-content:center; padding:0 5px;
+  }
+
+  /* ---------- generic ---------- */
+  .section-eyebrow{
+    font-family:'IBM Plex Mono', monospace; font-size:12px; letter-spacing:.08em;
+    color:var(--teal); text-transform:uppercase; margin:0 0 6px;
+  }
+  .card{
+    background:var(--panel); border:1px solid var(--line); border-radius:var(--radius);
+    box-shadow:var(--shadow);
+  }
+  .btn{
+    font-family:'Kanit',sans-serif; font-weight:500; font-size:14px;
+    border:none; cursor:pointer; border-radius:10px; padding:10px 16px;
+    transition:transform .12s ease, box-shadow .12s ease;
+  }
+  .btn:active{transform:scale(.97);}
+  .btn-primary{background:var(--teal); color:white;}
+  .btn-primary:hover{background:var(--teal-deep);}
+  .btn-ghost{background:var(--mint-soft); color:var(--teal-deep);}
+  .btn-ghost:hover{background:var(--mint);}
+  .btn-coral{background:var(--coral); color:white;}
+  .btn:disabled{opacity:.45; cursor:not-allowed;}
+
+  .chip{
+    font-family:'IBM Plex Mono', monospace; font-size:12.5px;
+    border:1.5px solid var(--line); background:var(--panel); color:var(--muted);
+    padding:6px 12px; border-radius:999px; cursor:pointer; user-select:none;
+    display:inline-flex; align-items:center; gap:6px; transition:all .15s ease;
+  }
+  .chip:hover{border-color:var(--teal);}
+  .chip.on{background:var(--teal); border-color:var(--teal); color:white;}
+  .chip .n{opacity:.65; font-size:11px;}
+
+  /* ---------- hero ---------- */
+  .hero{
+    display:grid; grid-template-columns:1.15fr .85fr; gap:28px;
+    padding:44px 0 30px; align-items:center;
+  }
+  .hero h1{font-size:40px; line-height:1.15; margin:0 0 14px; font-weight:700; color:var(--teal-deep);}
+  .hero h1 em{color:var(--coral); font-style:normal;}
+  .hero p.lead{font-size:15.5px; color:var(--muted); max-width:46ch; margin:0 0 22px; line-height:1.7;}
+  .greet-banner{
+    display:inline-flex; align-items:center; gap:8px;
+    background:var(--mint-soft); border:1px solid var(--mint); color:var(--teal-deep);
+    padding:8px 14px; border-radius:999px; font-size:13.5px; font-weight:500; margin-bottom:18px;
+  }
+  .hero-visual{
+    background:linear-gradient(160deg, var(--teal) 0%, var(--teal-deep) 100%);
+    border-radius:22px; padding:26px; color:white; position:relative; overflow:hidden;
+    min-height:230px;
+  }
+  .hero-visual::before{
+    content:"℞"; position:absolute; right:-10px; bottom:-30px; font-size:180px; opacity:.10;
+    font-family:'Kanit',sans-serif;
+  }
+  .hero-visual .k{font-family:'IBM Plex Mono',monospace; font-size:12px; opacity:.75; margin-bottom:10px;}
+  .hero-visual .big{font-family:'Kanit',sans-serif; font-size:34px; font-weight:700; margin-bottom:4px;}
+  .hero-visual .small{font-size:13px; opacity:.85;}
+  .hero-visual .rows{margin-top:18px; display:flex; flex-direction:column; gap:8px;}
+  .hero-visual .rows div{font-family:'IBM Plex Mono',monospace; font-size:12.5px; display:flex; justify-content:space-between; border-bottom:1px dashed rgba(255,255,255,.25); padding-bottom:6px;}
+
+  /* category grid */
+  .cat-grid{display:grid; grid-template-columns:repeat(auto-fill, minmax(150px,1fr)); gap:12px; margin:14px 0 6px;}
+  .cat-card{
+    background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:16px 14px;
+    cursor:pointer; transition:all .15s ease;
+  }
+  .cat-card:hover{border-color:var(--teal); transform:translateY(-2px); box-shadow:var(--shadow);}
+  .cat-card .ic{font-size:22px; margin-bottom:8px; display:block;}
+  .cat-card .label{font-family:'Kanit',sans-serif; font-weight:500; font-size:14px; color:var(--ink);}
+  .cat-card .count{font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--muted); margin-top:2px;}
+
+  /* product grid */
+  .grid{display:grid; grid-template-columns:repeat(auto-fill, minmax(230px,1fr)); gap:16px; margin-top:16px;}
+  .pcard{padding:16px; display:flex; flex-direction:column; gap:8px;}
+  .pcard .top-row{display:flex; justify-content:space-between; align-items:flex-start;}
+  .pcard .emoji{font-size:30px;}
+  .badge{font-size:10.5px; font-weight:700; padding:3px 8px; border-radius:999px; font-family:'Kanit',sans-serif;}
+  .badge.rx{background:var(--coral-soft); color:#B4441F;}
+  .badge.low{background:#FFF1CF; color:#8A6A00;}
+  .pcard h3{font-size:15px; margin:2px 0 0; font-weight:600;}
+  .pcard .tags{display:flex; flex-wrap:wrap; gap:5px; margin:2px 0;}
+  .pcard .tags span{font-family:'IBM Plex Mono',monospace; font-size:10.5px; background:var(--mint-soft); color:var(--teal-deep); padding:2px 7px; border-radius:6px;}
+  .pcard .price{font-family:'Kanit',sans-serif; font-weight:600; font-size:17px; color:var(--teal-deep); margin-top:auto;}
+  .pcard .price small{font-size:11px; color:var(--muted); font-weight:400;}
+  .pcard .row-btn{display:flex; gap:8px; margin-top:4px;}
+  .pcard .row-btn .btn{flex:1; text-align:center;}
+
+  /* filter bar */
+  .filterbar{padding:18px 20px; margin-top:18px;}
+  .filterbar .search{
+    width:100%; padding:11px 14px; border-radius:10px; border:1.5px solid var(--line);
+    font-family:'Sarabun',sans-serif; font-size:14.5px; margin-bottom:14px; background:var(--bg);
+  }
+  .filterbar .search:focus{outline:none; border-color:var(--teal);}
+  .fgroup{margin-bottom:12px;}
+  .fgroup .flabel{font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--muted); margin-bottom:7px; text-transform:uppercase; letter-spacing:.05em;}
+  .fchips{display:flex; flex-wrap:wrap; gap:8px;}
+  .op-select{display:flex; gap:8px; margin:14px 0 4px;}
+  .op-btn{
+    font-family:'IBM Plex Mono',monospace; font-weight:600; font-size:13px;
+    border:1.5px solid var(--line); background:var(--panel); color:var(--muted);
+    padding:8px 14px; border-radius:10px; cursor:pointer;
+  }
+  .op-btn.on{background:var(--teal-deep); border-color:var(--teal-deep); color:white;}
+  .result-line{
+    margin-top:14px; padding:12px 14px; background:var(--mint-soft); border-radius:10px;
+    font-family:'IBM Plex Mono',monospace; font-size:13px; color:var(--teal-deep);
+  }
+
+  /* checkout */
+  .checkout-grid{display:grid; grid-template-columns:1.4fr 1fr; gap:22px; margin-top:20px; align-items:flex-start;}
+  .cart-item{display:flex; gap:12px; padding:14px; border-bottom:1px solid var(--line); align-items:center;}
+  .cart-item:last-child{border-bottom:none;}
+  .cart-item .em{font-size:26px;}
+  .cart-item .info{flex:1;}
+  .cart-item .info .nm{font-weight:600; font-size:14.5px;}
+  .cart-item .info .pr{font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--muted);}
+  .qty{display:flex; align-items:center; gap:8px;}
+  .qty button{width:26px;height:26px;border-radius:8px; border:1px solid var(--line); background:var(--bg); cursor:pointer; font-weight:700; color:var(--teal-deep);}
+  .qty span{font-family:'IBM Plex Mono',monospace; font-size:13px; min-width:16px; text-align:center;}
+  .rm{background:none; border:none; color:var(--coral); cursor:pointer; font-size:12px; font-family:'Sarabun',sans-serif;}
+
+  .summary{padding:20px;}
+  .summary .line{display:flex; justify-content:space-between; font-size:14px; margin-bottom:9px; color:var(--muted);}
+  .summary .line.total{color:var(--ink); font-weight:700; font-size:17px; font-family:'Kanit',sans-serif; border-top:1px dashed var(--line); padding-top:12px; margin-top:8px;}
+  .summary .line.discount{color:var(--coral);}
+  .notice{
+    display:flex; gap:8px; padding:11px 12px; border-radius:10px; font-size:12.5px; margin:10px 0;
+    align-items:flex-start; line-height:1.5;
+  }
+  .notice.warn{background:var(--coral-soft); color:#8A331A;}
+  .notice.ok{background:var(--mint-soft); color:var(--teal-deep);}
+
+  .empty{padding:40px 20px; text-align:center; color:var(--muted); font-size:14px;}
+  .empty .big{font-size:40px; margin-bottom:8px;}
+
+  section.page{display:none;}
+  section.page.active{display:block;}
+
+  /* console */
+  .console-toggle{
+    position:fixed; right:20px; bottom:20px; z-index:50;
+    background:var(--console-bg); color:var(--console-ink);
+    border:none; border-radius:999px; padding:12px 18px;
+    font-family:'IBM Plex Mono',monospace; font-size:12.5px; cursor:pointer;
+    box-shadow:0 10px 28px rgba(11,31,27,0.35); display:flex; align-items:center; gap:8px;
+  }
+  .console-toggle .dot{width:7px;height:7px;border-radius:50%; background:var(--console-ink); animation:pulse 1.6s infinite;}
+  @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
+  .console{
+    position:fixed; right:20px; bottom:70px; z-index:50;
+    width:400px; max-width:88vw; height:280px;
+    background:var(--console-bg); border-radius:14px; overflow:hidden;
+    box-shadow:0 20px 50px rgba(11,31,27,0.45);
+    display:none; flex-direction:column;
+  }
+  .console.open{display:flex;}
+  .console .chead{
+    padding:10px 14px; border-bottom:1px solid rgba(185,245,216,0.12);
+    font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:var(--console-dim);
+    display:flex; justify-content:space-between; align-items:center;
+  }
+  .console .chead b{color:var(--console-ink);}
+  .console .cbody{flex:1; overflow-y:auto; padding:10px 14px; font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--console-ink); line-height:1.65;}
+  .console .cbody .ln{margin-bottom:7px; white-space:pre-wrap;}
+  .console .cbody .ln .pfx{color:var(--console-dim);}
+  .console .cbody .ln .res{color:#FFD08A;}
+  .console .close-x{background:none; border:none; color:var(--console-dim); cursor:pointer; font-size:14px;}
+
+  footer.note{
+    max-width:1180px; margin:30px auto 0; padding:14px 20px;
+    font-size:12px; color:var(--muted); text-align:center;
+  }
+
+  @media (max-width:840px){
+    .hero{grid-template-columns:1fr;}
+    .checkout-grid{grid-template-columns:1fr;}
+    .top-inner{flex-wrap:wrap;}
+    nav.tabs{order:3; width:100%; justify-content:space-between;}
+  }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="top-inner">
+    <div class="brand">
+      <div class="mark">✚</div>
+      <div class="brand-text">
+        <div class="name">SetDee <span style="color:var(--teal)">เภสัช</span></div>
+        <div class="tag">ร้านยา ∙ จัดหมวดด้วยเซต</div>
+      </div>
+    </div>
+    <nav class="tabs">
+      <button class="tab-btn active" data-page="home">หน้าแรก</button>
+      <button class="tab-btn" data-page="products">สินค้า</button>
+      <button class="tab-btn" data-page="checkout">ตะกร้า</button>
+    </nav>
+    <div class="cart-pill" onclick="goTo('checkout')">
+      🛒 ตะกร้า <span class="count" id="cartCount">0</span>
+    </div>
+  </div>
+</header>
+
+<div class="app">
+
+  <!-- ============ PAGE 1: HOME ============ -->
+  <section class="page active" id="page-home">
+    <div class="hero">
+      <div>
+        <div class="greet-banner" id="greetBanner">🕐 —</div>
+        <h1>ดูแลสุขภาพให้ครบ<br>ด้วยหลักคิดแบบ <em>เซต</em></h1>
+        <p class="lead">ร้านยาเซตดีจัดหมวดสินค้าทุกชิ้นด้วย Set — สินค้าหนึ่งชิ้นเป็นสมาชิกได้หลายหมวดพร้อมกัน
+        ทำให้ค้นหาและกรองสินค้าที่ตรงกับความต้องการของคุณได้แม่นยำกว่าเดิม</p>
+        <button class="btn btn-primary" onclick="goTo('products')">เลือกซื้อสินค้า →</button>
+      </div>
+      <div class="hero-visual">
+        <div class="k">// สินค้าทั้งหมดในระบบ (Universal Set)</div>
+        <div class="big" id="totalProductsBig">0</div>
+        <div class="small">รายการสินค้าทั้งหมด</div>
+        <div class="rows" id="heroStatRows"></div>
+      </div>
+    </div>
+
+    <div class="section-eyebrow">หมวดหมู่สินค้า — สร้างจาก new Set()</div>
+    <h2 style="margin:0 0 4px;">เลือกดูตามหมวด</h2>
+    <p style="color:var(--muted); font-size:13.5px; margin-top:0;">แต่ละหมวดคือหนึ่งเซต (Set) ตัวเลขในวงเล็บคือขนาดเซต (Set.size)</p>
+    <div class="cat-grid" id="catGrid"></div>
+
+    <div class="section-eyebrow" style="margin-top:34px;">สินค้าแนะนำ</div>
+    <h2 style="margin:0 0 4px;">ขายดีประจำสัปดาห์</h2>
+    <div class="grid" id="featuredGrid"></div>
+  </section>
+
+  <!-- ============ PAGE 2: PRODUCTS ============ -->
+  <section class="page" id="page-products">
+    <div class="section-eyebrow" style="margin-top:26px;">หน้าสินค้า</div>
+    <h2 style="margin:0 0 4px;">ค้นหาและกรองสินค้า</h2>
+    <p style="color:var(--muted); font-size:13.5px; margin-top:0;">ใช้ Operation ของเซต (Union / Intersection / Difference) เพื่อกรองสินค้าหลายเงื่อนไขพร้อมกัน</p>
+
+    <div class="card filterbar">
+      <input class="search" id="searchInput" placeholder="🔍 ค้นหาชื่อสินค้า เช่น พาราเซตามอล, วิตามินซี ...">
+
+      <div class="fgroup">
+        <div class="flabel">เลือกหมวดหมู่ (คลิกได้หลายหมวด)</div>
+        <div class="fchips" id="tagChips"></div>
+      </div>
+
+      <div class="fgroup">
+        <div class="flabel">Set Operation ที่ใช้รวมหมวดที่เลือก</div>
+        <div class="op-select" id="opSelect">
+          <button class="op-btn on" data-op="union">∪ Union (หรือ)</button>
+          <button class="op-btn" data-op="intersect">∩ Intersection (และ)</button>
+          <button class="op-btn" data-op="diff">− Difference (แต่ไม่ใช่)</button>
+        </div>
+      </div>
+
+      <div class="result-line" id="resultLine">A = สินค้าทั้งหมด</div>
+    </div>
+
+    <div class="grid" id="productsGrid"></div>
+  </section>
+
+  <!-- ============ PAGE 3: CHECKOUT ============ -->
+  <section class="page" id="page-checkout">
+    <div class="section-eyebrow" style="margin-top:26px;">ตะกร้าสินค้า</div>
+    <h2 style="margin:0 0 4px;">สรุปคำสั่งซื้อ</h2>
+    <p style="color:var(--muted); font-size:13.5px; margin-top:0;">ใช้ตรรกศาสตร์ (if–else, &&, ||, !) ตรวจสอบโปรโมชั่น และ Set แนะนำสินค้าที่ยังไม่มีในตะกร้า</p>
+
+    <div class="checkout-grid">
+      <div class="card" id="cartList"></div>
+
+      <div>
+        <div class="card summary" id="summaryBox"></div>
+        <div class="section-eyebrow" style="margin-top:22px;">แนะนำเพิ่มเติม</div>
+        <p style="color:var(--muted); font-size:13px; margin:0 0 10px;">= (สินค้าทั้งหมด − สินค้าในตะกร้า) ∩ (หมวดที่คุณสนใจ)</p>
+        <div id="recoList" style="display:flex; flex-direction:column; gap:10px;"></div>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<footer class="note">โปรเจกต์สาธิตหลักการดิสครีต (Set &amp; Logic) — SetDee Pharmacy Demo</footer>
+
+<!-- discrete-math console -->
+<button class="console-toggle" onclick="toggleConsole()"><span class="dot"></span> Math Console</button>
+<div class="console" id="mathConsole">
+  <div class="chead"><b>Discrete Math Console</b><button class="close-x" onclick="toggleConsole()">✕ ปิด</button></div>
+  <div class="cbody" id="consoleBody"></div>
+</div>
+
+<script>
+/* =====================================================================
+   ข้อมูลสินค้า — เก็บ tags เป็น array แต่ทุกครั้งที่ใช้งานจริง
+   เราจะแปลงเป็น Set เพื่อสาธิต Set operations
+===================================================================== */
+const PRODUCTS = [
+  {id:1,  name:"พาราเซตามอล 500มก.",     price:25,  stock:120, emoji:"💊", tags:["ยาแก้ปวด","OTC","ลดราคา"]},
+  {id:2,  name:"ไอบูโพรเฟน 400มก.",       price:45,  stock:8,   emoji:"💊", tags:["ยาแก้ปวด","OTC"]},
+  {id:3,  name:"วิตามินซี 1000มก.",        price:150, stock:60,  emoji:"🍊", tags:["วิตามิน","OTC","ลดราคา"]},
+  {id:4,  name:"วิตามินดี3",               price:180, stock:35,  emoji:"☀️", tags:["วิตามิน","OTC"]},
+  {id:5,  name:"ยาลดความดัน (Amlodipine)", price:95,  stock:50,  emoji:"❤️", tags:["ยาโรคเรื้อรัง","ต้องใบสั่งแพทย์"]},
+  {id:6,  name:"ยาเบาหวาน (Metformin)",    price:110, stock:6,   emoji:"🩸", tags:["ยาโรคเรื้อรัง","ต้องใบสั่งแพทย์"]},
+  {id:7,  name:"เครื่องวัดความดัน",         price:990, stock:15,  emoji:"🩺", tags:["อุปกรณ์การแพทย์","OTC"]},
+  {id:8,  name:"เครื่องวัดออกซิเจนปลายนิ้ว",price:590, stock:22,  emoji:"🫁", tags:["อุปกรณ์การแพทย์","OTC","ลดราคา"]},
+  {id:9,  name:"ครีมกันแดด SPF50",         price:320, stock:40,  emoji:"🧴", tags:["สกินแคร์","OTC"]},
+  {id:10, name:"เจลล้างมือแอลกอฮอล์",       price:59,  stock:200, emoji:"🧼", tags:["สกินแคร์","OTC","ลดราคา"]},
+  {id:11, name:"ยาแก้แพ้ (Cetirizine)",     price:38,  stock:70,  emoji:"🤧", tags:["ยาแก้ปวด","OTC"]},
+  {id:12, name:"พลาสเตอร์ปิดแผล",           price:49,  stock:5,   emoji:"🩹", tags:["อุปกรณ์การแพทย์","OTC"]},
+  {id:13, name:"ยาหยอดตา",                 price:75,  stock:33,  emoji:"👁️", tags:["OTC","สกินแคร์"]},
+  {id:14, name:"ยาลดไขมัน (Statin)",        price:135, stock:18,  emoji:"💊", tags:["ยาโรคเรื้อรัง","ต้องใบสั่งแพทย์"]},
+  {id:15, name:"โอเมก้า 3 น้ำมันปลา",       price:220, stock:44,  emoji:"🐟", tags:["วิตามิน","OTC","ลดราคา"]},
+];
+
+const TAG_ICON = {
+  "ยาแก้ปวด":"💊","OTC":"🟢","ลดราคา":"🏷️","วิตามิน":"🍊","ยาโรคเรื้อรัง":"❤️",
+  "ต้องใบสั่งแพทย์":"📋","อุปกรณ์การแพทย์":"🩺","สกินแคร์":"🧴"
+};
+
+/* =====================================================================
+   In-memory storage
+   หมายเหตุ: โจทย์ระบุให้ใช้ localStorage แต่พื้นที่รันโค้ดของ artifact นี้
+   บล็อกการใช้ localStorage/sessionStorage จริง จึงจำลอง API หน้าตาเดียวกัน
+   (getItem/setItem) ด้วยตัวแปรในหน่วยความจำแทน — ถ้านำโค้ดนี้ไปรันบนเว็บ
+   ของจริง สามารถสลับ store ก้อนนี้กลับไปใช้ window.localStorage ได้ทันที
+   เพราะหน้าตา method เหมือนกันทุกประการ
+===================================================================== */
+const memoryStore = {};
+const storage = {
+  getItem:(k)=> (k in memoryStore ? memoryStore[k] : null),
+  setItem:(k,v)=>{ memoryStore[k]=v; },
+};
+
+function loadCart(){
+  const raw = storage.getItem("cart");
+  return raw ? JSON.parse(raw) : {};   // { productId: qty }
+}
+function saveCart(cart){
+  storage.setItem("cart", JSON.stringify(cart));
+}
+let cart = loadCart();
+
+/* =====================================================================
+   Math console — log ทุก operation ของเซต/ตรรกะที่เกิดขึ้นจริง
+===================================================================== */
+function logConsole(line, result){
+  const body = document.getElementById("consoleBody");
+  const div = document.createElement("div");
+  div.className = "ln";
+  div.innerHTML = `<span class="pfx">&gt; </span>${line}` + (result!==undefined ? `\n<span class="res">→ ${result}</span>` : "");
+  body.appendChild(div);
+  body.scrollTop = body.scrollHeight;
+}
+function toggleConsole(){
+  document.getElementById("mathConsole").classList.toggle("open");
+}
+
+/* =====================================================================
+   Navigation (ตรรกะแบบ if-else ง่าย ๆ สลับหน้า)
+===================================================================== */
+function goTo(pageId){
+  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+  document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));
+  const target = document.getElementById("page-"+pageId);
+  if (target){ target.classList.add("active"); }
+  const btn = document.querySelector(`.tab-btn[data-page="${pageId}"]`);
+  if (btn){ btn.classList.add("active"); }
+  if (pageId === "checkout") renderCheckout();
+  if (pageId === "products") renderProducts();
+  window.scrollTo({top:0, behavior:"smooth"});
+}
+document.querySelectorAll(".tab-btn").forEach(b=>{
+  b.addEventListener("click", ()=> goTo(b.dataset.page));
+});
+
+/* =====================================================================
+   PAGE 1: HOME
+===================================================================== */
+function greetLogic(){
+  // if-else ตามช่วงเวลา
+  const h = new Date().getHours();
+  let text, icon;
+  if (h < 11){ text = "อรุณสวัสดิ์ ดูแลสุขภาพตั้งแต่เช้า"; icon = "🌅"; }
+  else if (h < 17){ text = "สวัสดีตอนบ่าย พักดื่มน้ำสักแก้วนะ"; icon = "🌤️"; }
+  else { text = "สวัสดีตอนเย็น อย่าลืมทานยาตามมื้อ"; icon = "🌙"; }
+  document.getElementById("greetBanner").textContent = `${icon} ${text}`;
+}
+
+function renderHome(){
+  greetLogic();
+
+  // ----- Universal Set ของสินค้าทั้งหมด -----
+  const allSet = new Set(PRODUCTS.map(p=>p.id));
+  document.getElementById("totalProductsBig").textContent = allSet.size;
+
+  // ----- เซตย่อย: สินค้าลดราคา / สินค้าใกล้หมด (ใช้ if-else ผ่าน filter) -----
+  const saleSet = new Set(PRODUCTS.filter(p=>p.tags.includes("ลดราคา")).map(p=>p.id));
+  const lowStockSet = new Set(PRODUCTS.filter(p=>p.stock < 10).map(p=>p.id));
+  const rxSet = new Set(PRODUCTS.filter(p=>p.tags.includes("ต้องใบสั่งแพทย์")).map(p=>p.id));
+
+  logConsole(`all = new Set(products.map(p=&gt;p.id))`, `size ${allSet.size}`);
+  logConsole(`sale = new Set(products.filter(p=&gt;p.tags.includes("ลดราคา")))`, `size ${saleSet.size}`);
+
+  document.getElementById("heroStatRows").innerHTML = `
+    <div><span>🏷️ กำลังลดราคา</span><span>${saleSet.size} รายการ</span></div>
+    <div><span>⚠️ สต็อกต่ำ (&lt;10)</span><span>${lowStockSet.size} รายการ</span></div>
+    <div><span>📋 ต้องใบสั่งแพทย์</span><span>${rxSet.size} รายการ</span></div>
+  `;
+
+  // ----- หมวดหมู่ทั้งหมด: ใช้ Set เพื่อดึงหมวด "ไม่ซ้ำ" จาก tags ทุกชิ้น -----
+  const categorySet = new Set();
+  PRODUCTS.forEach(p => p.tags.forEach(t => categorySet.add(t)));   // .add()
+  logConsole(`categories = new Set(); products.forEach(p=&gt;p.tags.forEach(t=&gt;categories.add(t)))`, `size ${categorySet.size}`);
+
+  const catGrid = document.getElementById("catGrid");
+  catGrid.innerHTML = "";
+  [...categorySet].forEach(tag=>{
+    const count = PRODUCTS.filter(p=>p.tags.includes(tag)).length;
+    const el = document.createElement("div");
+    el.className = "cat-card";
+    el.innerHTML = `<span class="ic">${TAG_ICON[tag]||"🔹"}</span><div class="label">${tag}</div><div class="count">${count} รายการ</div>`;
+    el.onclick = ()=>{ goTo("products"); setTimeout(()=>toggleTag(tag, "union"), 60); };
+    catGrid.appendChild(el);
+  });
+
+  // ----- สินค้าแนะนำ: ใช้เงื่อนไข if-else (ลดราคา && สต็อกเหลือ) -----
+  const featured = PRODUCTS.filter(p => p.tags.includes("ลดราคา") && p.stock > 0).slice(0,4);
+  const fGrid = document.getElementById("featuredGrid");
+  fGrid.innerHTML = "";
+  featured.forEach(p => fGrid.appendChild(productCard(p)));
+
+  updateCartCount();
+}
+
+/* =====================================================================
+   PAGE 2: PRODUCTS — Set operations: Union / Intersection / Difference
+===================================================================== */
+const ALL_TAGS = [...new Set(PRODUCTS.flatMap(p=>p.tags))];
+let selectedTags = new Set();     // เซต A ของหมวดที่ผู้ใช้เลือก
+let currentOp = "union";
+let searchTerm = "";
+
+function buildTagChips(){
+  const wrap = document.getElementById("tagChips");
+  wrap.innerHTML = "";
+  ALL_TAGS.forEach(tag=>{
+    const n = PRODUCTS.filter(p=>p.tags.includes(tag)).length;
+    const chip = document.createElement("div");
+    chip.className = "chip" + (selectedTags.has(tag) ? " on" : "");
+    chip.innerHTML = `${TAG_ICON[tag]||""} ${tag} <span class="n">(${n})</span>`;
+    chip.onclick = ()=> toggleTag(tag, currentOp);
+    wrap.appendChild(chip);
+  });
+}
+
+function toggleTag(tag, opHint){
+  if (opHint) setOp(opHint, false);
+  // สลับสมาชิกเข้า/ออกจากเซต โดยใช้ .has()
+  if (selectedTags.has(tag)) selectedTags.delete(tag);
+  else selectedTags.add(tag);
+  renderProducts();
+}
+
+function setOp(op, rerender=true){
+  currentOp = op;
+  document.querySelectorAll(".op-btn").forEach(b=>b.classList.toggle("on", b.dataset.op===op));
+  if (rerender) renderProducts();
+}
+document.querySelectorAll(".op-btn").forEach(b=> b.addEventListener("click", ()=> setOp(b.dataset.op)));
+document.getElementById("searchInput").addEventListener("input", e=>{
+  searchTerm = e.target.value.trim().toLowerCase();
+  renderProducts();
+});
+
+/*
+  filterByTags(): สาธิต Union / Intersection / Difference จริง ๆ บนเซตของ "ผลิตภัณฑ์ที่ตรงแต่ละ tag"
+  - Union (∪):        สินค้าที่อยู่ในหมวดใดหมวดหนึ่งที่เลือก
+  - Intersection (∩): สินค้าที่อยู่ในหมวด "ทุกหมวด" ที่เลือกพร้อมกัน
+  - Difference (−):    สินค้าที่อยู่ในหมวดแรกที่เลือก แต่ไม่อยู่ในหมวดอื่น ๆ ที่เลือก
+*/
+function filterByTags(){
+  if (selectedTags.size === 0) return PRODUCTS.slice();
+
+  const tagArr = [...selectedTags];
+  const setsPerTag = tagArr.map(tag => new Set(PRODUCTS.filter(p=>p.tags.includes(tag)).map(p=>p.id)));
+
+  let resultIdSet;
+  if (currentOp === "union"){
+    resultIdSet = new Set();
+    setsPerTag.forEach(s => s.forEach(id => resultIdSet.add(id)));   // Union
+  } else if (currentOp === "intersect"){
+    resultIdSet = new Set(setsPerTag[0]);
+    for (let i=1;i<setsPerTag.length;i++){
+      resultIdSet = new Set([...resultIdSet].filter(id => setsPerTag[i].has(id)));  // Intersection
+    }
+  } else { // diff
+    resultIdSet = new Set(setsPerTag[0]);
+    for (let i=1;i<setsPerTag.length;i++){
+      resultIdSet = new Set([...resultIdSet].filter(id => !setsPerTag[i].has(id))); // Difference
+    }
+  }
+
+  const opSymbol = currentOp==="union" ? "∪" : currentOp==="intersect" ? "∩" : "−";
+  logConsole(`(${tagArr.join(` ${opSymbol} `)})`, `${resultIdSet.size} รายการ`);
+
+  return PRODUCTS.filter(p => resultIdSet.has(p.id));
+}
+
+function renderProducts(){
+  buildTagChips();
+
+  let list = filterByTags();
+  if (searchTerm){
+    list = list.filter(p => p.name.toLowerCase().includes(searchTerm));   // .includes()
+  }
+
+  const opSymbol = currentOp==="union" ? "∪ (หรือ)" : currentOp==="intersect" ? "∩ (และ)" : "− (แต่ไม่ใช่)";
+  const line = selectedTags.size === 0
+    ? `A = สินค้าทั้งหมด (${PRODUCTS.length} รายการ)`
+    : `(${[...selectedTags].join(` ${currentOp==="union"?"∪":currentOp==="intersect"?"∩":"−"} `)}) ด้วย ${opSymbol} → ผลลัพธ์ ${list.length} รายการ`;
+  document.getElementById("resultLine").textContent = line;
+
+  const grid = document.getElementById("productsGrid");
+  grid.innerHTML = "";
+  if (list.length === 0){
+    grid.innerHTML = `<div class="empty" style="grid-column:1/-1;"><div class="big">🔍</div>ไม่พบสินค้าที่ตรงเงื่อนไข</div>`;
+    return;
+  }
+  list.forEach(p => grid.appendChild(productCard(p)));
+}
+
+function productCard(p){
+  const el = document.createElement("div");
+  el.className = "card pcard";
+  const rx = p.tags.includes("ต้องใบสั่งแพทย์");
+  const low = p.stock < 10;
+  el.innerHTML = `
+    <div class="top-row">
+      <span class="emoji">${p.emoji}</span>
+      <div style="display:flex;flex-direction:column; gap:4px; align-items:flex-end;">
+        ${rx ? `<span class="badge rx">ต้องใบสั่งแพทย์</span>` : ""}
+        ${low ? `<span class="badge low">เหลือ ${p.stock} ชิ้น</span>` : ""}
+      </div>
+    </div>
+    <h3>${p.name}</h3>
+    <div class="tags">${p.tags.map(t=>`<span>${t}</span>`).join("")}</div>
+    <div class="price">฿${p.price} <small>/ ชิ้น</small></div>
+    <div class="row-btn">
+      <button class="btn btn-primary" ${p.stock===0?"disabled":""} onclick="addToCart(${p.id})">+ ใส่ตะกร้า</button>
+    </div>
+  `;
+  return el;
+}
+
+/* =====================================================================
+   Cart actions
+===================================================================== */
+function addToCart(id){
+  cart[id] = (cart[id]||0) + 1;
+  saveCart(cart);
+  updateCartCount();
+  logConsole(`cart.set(${id}, qty+1)`, `รวม ${Object.values(cart).reduce((a,b)=>a+b,0)} ชิ้น`);
+}
+function changeQty(id, delta){
+  cart[id] = (cart[id]||0) + delta;
+  if (cart[id] <= 0) delete cart[id];
+  saveCart(cart);
+  updateCartCount();
+  renderCheckout();
+}
+function removeFromCart(id){
+  delete cart[id];
+  saveCart(cart);
+  updateCartCount();
+  renderCheckout();
+}
+function updateCartCount(){
+  const n = Object.values(cart).reduce((a,b)=>a+b,0);
+  document.getElementById("cartCount").textContent = n;
+}
+
+/* =====================================================================
+   PAGE 3: CHECKOUT — Logic (if-else, &&, ||, !) + Set (reduce, difference/intersection)
+===================================================================== */
+function renderCheckout(){
+  const cartList = document.getElementById("cartList");
+  const ids = Object.keys(cart).map(Number);
+
+  if (ids.length === 0){
+    cartList.innerHTML = `<div class="empty"><div class="big">🛒</div>ตะกร้ายังว่างอยู่<br><button class="btn btn-ghost" style="margin-top:12px;" onclick="goTo('products')">ไปเลือกซื้อสินค้า</button></div>`;
+    document.getElementById("summaryBox").innerHTML = "";
+    document.getElementById("recoList").innerHTML = "";
+    return;
+  }
+
+  cartList.innerHTML = "";
+  ids.forEach(id=>{
+    const p = PRODUCTS.find(pr=>pr.id===id);
+    const qty = cart[id];
+    const row = document.createElement("div");
+    row.className = "cart-item";
+    row.innerHTML = `
+      <span class="em">${p.emoji}</span>
+      <div class="info">
+        <div class="nm">${p.name}</div>
+        <div class="pr">฿${p.price} × ${qty} = ฿${p.price*qty}</div>
+      </div>
+      <div class="qty">
+        <button onclick="changeQty(${id},-1)">−</button>
+        <span>${qty}</span>
+        <button onclick="changeQty(${id},1)">+</button>
+      </div>
+      <button class="rm" onclick="removeFromCart(${id})">ลบ</button>
+    `;
+    cartList.appendChild(row);
+  });
+
+  /* ---- subtotal ด้วย reduce() ---- */
+  const cartProducts = ids.map(id => ({p: PRODUCTS.find(pr=>pr.id===id), qty: cart[id]}));
+  const subtotal = cartProducts.reduce((sum, item) => sum + item.p.price * item.qty, 0);
+  const totalItems = cartProducts.reduce((sum, item) => sum + item.qty, 0);
+
+  /* ---- ตรรกศาสตร์ตรวจโปรโมชั่น: if-else / && / || ---- */
+  let discountRate = 0;
+  let promoLabel = "";
+  if (subtotal >= 1000){
+    discountRate = 0.15; promoLabel = "ยอดซื้อ ≥ 1,000 บาท ลด 15%";
+  } else if (subtotal >= 500){
+    discountRate = 0.10; promoLabel = "ยอดซื้อ ≥ 500 บาท ลด 10%";
+  }
+
+  // โบนัสส่วนลดเพิ่ม: ซื้อสินค้าหมวดเดียวกันครบ 3 ชิ้นขึ้นไป (ใช้ some() + &&)
+  const hasBundleDeal = ALL_TAGS.some(tag=>{
+    const countInTag = cartProducts.filter(item => item.p.tags.includes(tag)).reduce((s,i)=>s+i.qty,0);
+    return countInTag >= 3;
+  });
+  if (hasBundleDeal && discountRate < 0.20){
+    discountRate += 0.05; promoLabel += (promoLabel? " + " : "") + "โปรหมวดครบ 3 ชิ้น ลดเพิ่ม 5%";
+  }
+
+  const discountAmount = Math.round(subtotal * discountRate);
+  const total = subtotal - discountAmount;
+
+  // แจ้งเตือนสินค้าที่ต้องใบสั่งแพทย์ (!hasPrescription เป็นตัวอย่างค่า mock)
+  const hasPrescriptionOnly = cartProducts.some(item => item.p.tags.includes("ต้องใบสั่งแพทย์"));
+
+  const summary = document.getElementById("summaryBox");
+  summary.innerHTML = `
+    <h3 style="margin:0 0 14px;">สรุปยอด</h3>
+    <div class="line"><span>จำนวนสินค้า</span><span>${totalItems} ชิ้น</span></div>
+    <div class="line"><span>ยอดรวม</span><span>฿${subtotal.toLocaleString()}</span></div>
+    ${discountRate>0 ? `<div class="line discount"><span>ส่วนลด (${Math.round(discountRate*100)}%)</span><span>−฿${discountAmount.toLocaleString()}</span></div>` : ""}
+    <div class="line total"><span>ยอดสุทธิ</span><span>฿${total.toLocaleString()}</span></div>
+    ${promoLabel ? `<div class="notice ok">🏷️ ${promoLabel}</div>` : `<div class="notice ok">ซื้อครบ 500 บาท รับส่วนลด 10% ทันที</div>`}
+    ${hasPrescriptionOnly ? `<div class="notice warn">📋 ตะกร้ามีสินค้าที่ <b>ต้องใช้ใบสั่งแพทย์</b> กรุณาเตรียมใบสั่งยาก่อนรับสินค้า</div>` : ""}
+    <button class="btn btn-coral" style="width:100%; margin-top:12px; padding:13px;" onclick="placeOrder()">ยืนยันสั่งซื้อ</button>
+  `;
+
+  logConsole(`subtotal = cart.reduce((s,i)=&gt;s+i.price*i.qty,0)`, `฿${subtotal}`);
+  logConsole(`discountRate = ${discountRate} ${hasBundleDeal? "(bundle && rate<0.20)":""}`, `total ฿${total}`);
+
+  /* ---- สินค้าแนะนำ: (สินค้าทั้งหมด − สินค้าในตะกร้า) ∩ (หมวดในตะกร้า) ---- */
+  const inCartSet = new Set(ids);
+  const cartTagSet = new Set(cartProducts.flatMap(item => item.p.tags));   // หมวดที่ปรากฏในตะกร้า
+
+  const remaining = PRODUCTS.filter(p => !inCartSet.has(p.id));            // Difference: ทั้งหมด − ในตะกร้า
+  const recommended = remaining
+    .filter(p => p.tags.some(t => cartTagSet.has(t)))                      // Intersection กับหมวดที่สนใจ
+    .slice(0,3);
+
+  logConsole(`remaining = all.filter(p =&gt; !inCart.has(p.id))`, `${remaining.length} รายการ`);
+  logConsole(`recommend = remaining ∩ cartTags`, `${recommended.length} รายการ`);
+
+  const recoWrap = document.getElementById("recoList");
+  recoWrap.innerHTML = "";
+  if (recommended.length === 0){
+    recoWrap.innerHTML = `<div class="empty" style="padding:16px;">ไม่มีคำแนะนำเพิ่มเติม</div>`;
+  } else {
+    recommended.forEach(p=>{
+      const row = document.createElement("div");
+      row.className = "card";
+      row.style.padding = "12px";
+      row.style.display = "flex";
+      row.style.alignItems = "center";
+      row.style.gap = "10px";
+      row.innerHTML = `
+        <span style="font-size:22px;">${p.emoji}</span>
+        <div style="flex:1;">
+          <div style="font-size:13.5px; font-weight:600;">${p.name}</div>
+          <div style="font-size:12px; color:var(--muted);" class="mono">฿${p.price}</div>
+        </div>
+        <button class="btn btn-ghost" onclick="addToCart(${p.id}); renderCheckout();">+ เพิ่ม</button>
+      `;
+      recoWrap.appendChild(row);
+    });
+  }
+}
+
+function placeOrder(){
+  cart = {};
+  saveCart(cart);
+  updateCartCount();
+  renderCheckout();
+  document.getElementById("summaryBox").innerHTML = `
+    <div class="empty"><div class="big">✅</div>สั่งซื้อสำเร็จ!<br><span style="font-size:12.5px;">ขอบคุณที่ใช้บริการ SetDee เภสัช</span></div>
+  `;
+}
+
+/* =====================================================================
+   Init
+===================================================================== */
+logConsole(`ALL_TAGS = [...new Set(products.flatMap(p=&gt;p.tags))]`, `[${ALL_TAGS.join(", ")}]`);
+renderHome();
+renderProducts();
+updateCartCount();
+</script>
+</body>
+</html>
